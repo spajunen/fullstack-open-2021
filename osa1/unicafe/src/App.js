@@ -6,31 +6,22 @@ const Button = ({ handleClick, text }) => (
   </button>
 )
 
-const Header = (props) => {
-  return (
+const Header = ({text}) => (
     <div>
-      <h1>
-        {props.text}
-      </h1>
+      <h1>{text}</h1>
     </div>
   )
-}
 
-const StatisticLine = (props) => {
-  return (
+const StatisticLine = ({text, value}) => (
     <tr>
-      <td>{props.text}</td>
-      <td>{props.value}</td>
+      <td>{text}</td>
+      <td>{value}</td>
     </tr>
   )
-}
 
 const Statistics = (props) => {
-  const sum = () => {
-    return (
-      props.allClicks.length
-    )
-  }
+
+  const sum = () => props.allClicks.length
 
   const average = () => {
     let total = 0
