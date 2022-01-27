@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Persons from './components/Persons'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
-import axios from 'axios'
-
-
+import personService from './services/persons'
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
@@ -13,19 +11,16 @@ const App = () => {
   const [filter, setFilter] = useState('')
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data)
-      })
+    personService
+    .getAll()
+    .then(initialPersons => {
+      setPersons(initialPersons)
+    })
   }, [])
-
 
   const personsToShow = filter.length === 0
   ? persons
   : persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()))
-
-  const rows = () => personsToShow.map(person => <li key={person.name}>{person.name} {person.number}</li>)
 
   const handleNameChange = (event) => {
     setNewName(event.target.value)
@@ -37,25 +32,46 @@ const App = () => {
     setFilter(event.target.value)
   }
 
-  const addPerson = (event) => {
-    event.preventDefault()
-
-    const result = persons.filter(person => person.name === newName)
-
-    if (result.length > 0){
-      alert(`${newName} is already added to phonebook`)
-    }else{
-      const personObject = {
-        name: newName,
-        number: newNumber,
-      }
-      setPersons(persons.concat(personObject))
-      setNewName('')
-      setNewNumber('')
+  const removePerson = person => {
+    if (window.confirm(`Do you want to remove ${person.name}`)) {
+      personService
+        .remove(person.id)
+        .then(() => {
+          setPersons(persons.filter(p => person.id !== p.id))
+        })
     }
   }
 
+  const addPerson = (event) => {
+    event.preventDefault()
 
+    const person = persons.find(p => p.name === newName)
+    
+    const personObject = {
+      name: newName,
+      number: newNumber,
+    }
+
+    if (person !== undefined){
+      if (window.confirm(`${newName} is already added to phonebook, replace the old number with new one?`)) {
+        personService
+        .update(person.id, personObject)
+        .then(returnedPerson => {
+          setPersons(persons.map(p => p.id !== person.id ? p : returnedPerson))
+        })
+        setNewName('')
+        setNewNumber('')
+      }
+    }else{
+      personService
+      .create(personObject)
+      .then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson))
+        setNewName('')
+        setNewNumber('')
+      })
+    }
+  }
 
   return (
     <div>
@@ -68,7 +84,10 @@ const App = () => {
       newNumber={newNumber} handleNumberChange={handleNumberChange}/>
 
       <h3>Numbers</h3>
-      <Persons rows={rows}/>
+      {personsToShow.map(person=>
+        <Persons key={person.id} person={person} removePerson={removePerson} />
+        )}
+      
     </div>
   )
 
