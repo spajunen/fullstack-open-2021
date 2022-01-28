@@ -3,12 +3,15 @@ import Persons from './components/Persons'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import personService from './services/persons'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
 
   useEffect(() => {
     personService
@@ -39,6 +42,21 @@ const App = () => {
         .then(() => {
           setPersons(persons.filter(p => person.id !== p.id))
         })
+        .catch(error => {
+          setErrorMessage(
+            `Note '${person.name}' was already removed from server`
+          )
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
+          setPersons(persons.filter(n => n.id !== person.id))
+        })
+        setSuccessMessage(
+          `Person '${person.name}' was deleted`
+        )
+        setTimeout(() => {
+          setSuccessMessage('')
+        }, 5000)
     }
   }
 
@@ -58,25 +76,46 @@ const App = () => {
         .update(person.id, personObject)
         .then(returnedPerson => {
           setPersons(persons.map(p => p.id !== person.id ? p : returnedPerson))
+          
         })
-        setNewName('')
-        setNewNumber('')
+        .catch(error => {
+          setErrorMessage(
+            `Note '${person.name}' was already removed from server`
+          )
+          setPersons(persons.filter(n => n.id !== person.id))
+          
+        })
+        setSuccessMessage(
+          `Person '${newName}' was updated`
+        )
+        setTimeout(() => {
+          setSuccessMessage('')
+        }, 5000)
       }
+      
     }else{
       personService
       .create(personObject)
       .then(returnedPerson => {
         setPersons(persons.concat(returnedPerson))
-        setNewName('')
-        setNewNumber('')
+        setSuccessMessage(
+          `Person '${newName}' was added`
+        )
+        setTimeout(() => {
+          setSuccessMessage('')
+        }, 5000)
+        
       })
+     
     }
+    setNewName('')
+    setNewNumber('')
   }
-
+console.log(persons)
   return (
     <div>
       <h2>Phonebook</h2>
-
+      <Notification success={successMessage} error={errorMessage} setErrorMessage={setErrorMessage}/>
       <Filter filter={filter} handleFilterChange={handleFilterChange}/>
 
       <h3>Add a new</h3>
