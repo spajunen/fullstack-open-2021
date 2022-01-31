@@ -1,0 +1,1 @@
+This application is not online. Similar exercise https://github.com/spajunen/kesko-assignment-backend, is online at: https://kesko-assignment-backend.herokuapp.com/
