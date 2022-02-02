@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
 const mongoose = require('mongoose')
 
 const url = process.env.MONGODB_URI
@@ -11,23 +13,23 @@ mongoose.connect(url)
     console.log('error connecting to MongoDB:', error.message)
   })
 
-  const personSchema = new mongoose.Schema({
-    name: {
-      type: String,
-      minlength: 3,
-      required: true
-    },
-    number: {
-      type: String,
-      validate: {
-        validator: function(v) {
-          return /\d{2,3}-\d{5,}/.test(v);
-        },
-        message: props => `${props.value} is not a valid phone number!`
+const personSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    minlength: 3,
+    required: true
+  },
+  number: {
+    type: String,
+    validate: {
+      validator: function(v) {
+        return /\d{2,3}-\d{5,}/.test(v)
       },
-      required: true
+      message: props => `${props.value} is not a valid phone number!`
     },
-  })
+    required: true
+  },
+})
 
 personSchema.set('toJSON', {
   transform: (document, returnedObject) => {

@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
 const http = require('http')
 const express = require('express')
 const app = express()
@@ -14,13 +16,13 @@ app.use(morgan(':method :url :body :status :res[content-length] - :response-time
 
 const errorHandler = (error, request, response, next) => {
   console.error(error.message)
-  
+
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
   } else if (error.name === 'ValidationError') {
     return response.status(400).json({ error: error.message })
   }
-  
+
   next(error)
 }
 
@@ -49,9 +51,9 @@ const errorHandler = (error, request, response, next) => {
 
 app.get('/info', (request, response) => {
   Person.find({})
-  .then(persons => {
-    response.send(`<p>Phonebook has info for ${persons.length} people</p> <br> <p>${new Date()}</p>`)
-  })
+    .then(persons => {
+      response.send(`<p>Phonebook has info for ${persons.length} people</p> <br> <p>${new Date()}</p>`)
+    })
 })
 
 app.get('/api/persons', (request, response) => {
@@ -68,7 +70,7 @@ app.get('/api/persons/:id', (request, response) => {
       response.status(404).end()
     }
   })
-  .catch(error => next(error))
+    .catch(error => next(error))
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
@@ -83,8 +85,8 @@ app.post('/api/persons', (request, response, next) => {
   const body = request.body
 
   if (!body.name || !body.number) {
-    return response.status(400).json({ 
-      error: 'name or number missing' 
+    return response.status(400).json({
+      error: 'name or number missing'
     })
   }
 
@@ -94,12 +96,12 @@ app.post('/api/persons', (request, response, next) => {
   })
 
   person
-  .save()
-  .then(savedPerson => savedPerson.toJSON())
-  .then(savedAndFormattedPerson => {
-    response.json(savedAndFormattedPerson)
-  }) 
-  .catch(error => next(error))
+    .save()
+    .then(savedPerson => savedPerson.toJSON())
+    .then(savedAndFormattedPerson => {
+      response.json(savedAndFormattedPerson)
+    })
+    .catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
@@ -118,12 +120,12 @@ app.put('/api/persons/:id', (request, response, next) => {
 })
 
 const unknownEndpoint = (request, response) => {
-    response.status(404).send({ error: 'unknown endpoint' })
+  response.status(404).send({ error: 'unknown endpoint' })
 }
-app.use(unknownEndpoint)  
-app.use(errorHandler)  
+app.use(unknownEndpoint)
+app.use(errorHandler)
 
 const PORT = process.env.PORT
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
 })

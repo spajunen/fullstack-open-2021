@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const mongoose = require('mongoose')
 
 if (process.argv.length<3) {
@@ -27,22 +28,23 @@ const person = new Person({
 })
 
 if (process.argv.length === 3) {
-    Person
+  Person
     .find({})
     .then(result => {
-        console.log('phonebook:')    
-    result.forEach(person => {
-      console.log(person.name, ' ', person.number)
+      console.log('phonebook:')
+      result.forEach(person => {
+        console.log(person.name, ' ', person.number)
+      })
+      mongoose.connection.close()
     })
-    mongoose.connection.close()
-    })  
 }
 
 if (process.argv.length > 3) {
-    person
+  person
     .save()
+    // eslint-disable-next-line no-unused-vars
     .then(result => {
-        console.log('Added ',{name},' number ',{number},' to phonebook')
-    mongoose.connection.close()
-    })    
+      console.log('Added ',{ name },' number ',{ number },' to phonebook')
+      mongoose.connection.close()
+    })
 }
