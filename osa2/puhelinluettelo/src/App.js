@@ -44,7 +44,7 @@ const App = () => {
         })
         .catch(error => {
           setErrorMessage(
-            `Note '${person.name}' was already removed from server`
+            `Person '${person.name}' was already removed from server`
           )
           setTimeout(() => {
             setErrorMessage(null)
@@ -80,7 +80,7 @@ const App = () => {
         })
         .catch(error => {
           setErrorMessage(
-            `Note '${person.name}' was already removed from server`
+            `Person '${person.name}' was already removed from server`
           )
           setPersons(persons.filter(n => n.id !== person.id))
           
@@ -97,21 +97,25 @@ const App = () => {
       personService
       .create(personObject)
       .then(returnedPerson => {
-        setPersons(persons.concat(returnedPerson))
+        setPersons(persons.concat(returnedPerson))  
         setSuccessMessage(
           `Person '${newName}' was added`
         )
         setTimeout(() => {
           setSuccessMessage('')
         }, 5000)
-        
       })
-     
+      .catch(error => {
+        setErrorMessage(error.message)
+        setTimeout(() => {
+          setErrorMessage('')
+        }, 5000)
+      })
     }
     setNewName('')
     setNewNumber('')
   }
-console.log(persons)
+
   return (
     <div>
       <h2>Phonebook</h2>

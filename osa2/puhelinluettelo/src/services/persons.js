@@ -14,6 +14,9 @@ const create = newObject => {
   return request.then(response => response.data)
   .catch(error => {
     console.log('fail')
+    console.log(error.response.data.error)
+    throw Error(error.response.data.error)
+    
   })
 }
 
