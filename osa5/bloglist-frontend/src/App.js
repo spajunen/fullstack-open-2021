@@ -4,6 +4,7 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import BlogForm from './components/Blogform'
 import LoginForm from './components/Loginform'
+import Notification from './components/Notification'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -13,6 +14,7 @@ const App = () => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
+  const [message, setMessage] = useState('')
 
 
   useEffect(() => {
@@ -45,14 +47,14 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      /*setErrorMessage('wrong credentials')
+      setMessage('wrong credentials')
       setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)*/
+        setMessage(null)
+      }, 5000)
     }
   }
 
-  const addBlog = (event) => {
+  const addBlog = async (event) => {
     event.preventDefault()
     const blogObject = {
       title: title,
@@ -60,14 +62,22 @@ const App = () => {
       url: url,
     }
 
-    blogService
-      .create(blogObject)
-        .then(returnedBlog => {
-        setBlogs(blogs.concat(returnedBlog))
-        setTitle('')
-        setAuthor('')
-        setUrl('')
-      })
+    try {
+      const newBlog = await blogService.create(blogObject)
+      setBlogs(blogs.concat(newBlog))
+      setTitle('')
+      setAuthor('')
+      setUrl('')
+      setMessage('new blog created')
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
+    } catch (e){
+      setMessage('error creating blog')
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
+    }
   }
 
   const handleLogout = () => {
@@ -76,6 +86,9 @@ const App = () => {
   }
     
   return (
+    <div>
+    <h1>Blogs</h1>
+    <Notification message={message} />
     <div>
        {user === null ?
        <LoginForm  handleLogin={handleLogin} username={username} setUsername={setUsername} password={password} setPassword={setPassword}/>
@@ -90,7 +103,7 @@ const App = () => {
       )}
       </div>
     }
-    </div>
+    </div></div>
   )
 }
 
